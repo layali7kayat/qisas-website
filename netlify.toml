@@ -1,0 +1,3 @@
+[build]
+  command = "unzip -o qisas_project_adsense_ready_v7_github_netlify.zip -d . && node scripts/generate-sitemap.mjs"
+  publish = "."
