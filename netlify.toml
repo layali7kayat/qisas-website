@@ -1,3 +1,3 @@
 [build]
-  command = "unzip -o qisas_project_adsense_ready_v7_github_netlify.zip -d . && node scripts/generate-sitemap.mjs && sed -i 's|https://statuesque-medovik-7c88c0.netlify.app|https://magical-pika-979e0c.netlify.app|g; s|https://glittery-marzipan-fc84ea.netlify.app|https://magical-pika-979e0c.netlify.app|g' robots.txt sitemap.xml"
+  command = "unzip -o qisas_project_adsense_ready_v7_github_netlify.zip -d . && node scripts/generate-sitemap.mjs && sed -i 's|https://statuesque-medovik-7c88c0.netlify.app/*|https://qisas-wa-hikayat.netlify.app/|g; s|https://glittery-marzipan-fc84ea.netlify.app/*|https://qisas-wa-hikayat.netlify.app/|g; s|https://magical-pika-979e0c.netlify.app/*|https://qisas-wa-hikayat.netlify.app/|g' robots.txt sitemap.xml"
   publish = "."
