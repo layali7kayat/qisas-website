@@ -1,7 +1,0 @@
-[build]
-  publish = "."
-  command = "node scripts/generate-sitemap.mjs"
-
-[[edge_functions]]
-  function = "social-meta"
-  path = "/watch"
