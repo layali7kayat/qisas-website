@@ -1,6 +1,0 @@
-[build]
-  command = "rm -rf .netlify-extracted && mkdir -p .netlify-extracted && unzip -o qisas_project_adsense_fixed_v16_FINAL.zip -d .netlify-extracted && cp -R .netlify-extracted/. . && rm -rf .netlify-extracted && node scripts/generate-sitemap.mjs && sed -i 's|https://statuesque-medovik-7c88c0.netlify.app/*|https://qisas-wa-hikayat.netlify.app/|g; s|https://glittery-marzipan-fc84ea.netlify.app/*|https://qisas-wa-hikayat.netlify.app/|g; s|https://magical-pika-979e0c.netlify.app/*|https://qisas-wa-hikayat.netlify.app/|g' robots.txt sitemap.xml"
-  publish = "."
-
-[functions]
-  directory = "netlify/functions"
