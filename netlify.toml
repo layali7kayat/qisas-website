@@ -1,14 +1,37 @@
-
 [build]
   publish = "."
 
-[[redirects]]
-  from = "/story/*"
-  to = "/index.html"
-  status = 200
-  force = false
 
 [[redirects]]
-  from = "/*"
+
+  from = "/story/*"
+
   to = "/index.html"
+
   status = 200
+
+  force = false
+
+
+[[redirects]]
+
+  from = "/*"
+
+  to = "/index.html"
+
+  status = 200
+
+
+[[edge_functions]]
+
+  function = "social-meta"
+
+  path = "/watch"
+
+
+[[headers]]
+
+  for = "/ads.txt"
+
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"

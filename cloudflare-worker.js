@@ -186,10 +186,52 @@ export default {
     if (request.method !== 'POST') return reply(request, 405, { success: false, error: 'Method not allowed.' }, { Allow: 'POST, PUT, OPTIONS' });
     let body;
     try { body = await request.json(); } catch { return reply(request, 400, { success: false, error: 'Invalid JSON.' }); }
+
+    // Public visitor action: view counts live in Cloudflare D1, not Supabase.
+    if (body.action === 'incrementView') {
+      const id = String(body.id || '');
+      if (!/^[0-9a-f-]{36}$/i.test(id)) return reply(request, 400, { success: false, error: 'معرّف القصة غير صالح.' });
+      if (!env.VIEWS_DB) return reply(request, 503, { success: false, error: 'قاعدة D1 غير مربوطة بالعامل.' });
+      try {
+        const object = await env.VIDEOS_BUCKET.get('site/catalog.json');
+        if (!object) return reply(request, 503, { success: false, error: 'Catalog not initialized.' });
+        const catalog = await object.json();
+        const video = (catalog.videos || []).find(item => String(item.id) === id && item.status === 'published');
+        if (!video) return reply(request, 404, { success: false, error: 'القصة غير موجودة أو غير منشورة.' });
+        await env.VIEWS_DB.prepare('INSERT OR IGNORE INTO video_views (video_id, views) VALUES (?, ?)').bind(id, 0).run();
+        await env.VIEWS_DB.prepare('UPDATE video_views SET views = views + 1, updated_at = CURRENT_TIMESTAMP WHERE video_id = ?').bind(id).run();
+        const row = await env.VIEWS_DB.prepare('SELECT views FROM video_views WHERE video_id = ?').bind(id).first();
+        const count = Number(row?.views);
+        if (!Number.isFinite(count)) throw new Error('تعذر قراءة عداد المشاهدات.');
+        // Best-effort catalog cache update; D1 is the source of truth.
+        video.views = count;
+        catalog.updated_at = new Date().toISOString();
+        await env.VIDEOS_BUCKET.put('site/catalog.json', JSON.stringify(catalog), {
+          httpMetadata: { contentType: 'application/json; charset=utf-8', cacheControl: 'no-store, max-age=0' }
+        });
+        return reply(request, 200, { success: true, views: count });
+      } catch (error) {
+        return reply(request, 500, { success: false, error: error?.message || 'تعذر تسجيل المشاهدة.' });
+      }
+    }
+
     if (!validPin(request, body, env)) return reply(request, 401, { success: false, error: 'رمز الإدارة غير صحيح.' });
 
     try {
       const action = body.action;
+      if (action === 'initializeViewCounts') {
+        if (!env.VIEWS_DB) return reply(request, 503, { success: false, error: 'قاعدة D1 غير مربوطة بالعامل.' });
+        const object = await env.VIDEOS_BUCKET.get('site/catalog.json');
+        if (!object) return reply(request, 503, { success: false, error: 'Catalog not initialized.' });
+        const catalog = await object.json();
+        let count = 0;
+        for (const video of (catalog.videos || [])) {
+          if (!/^[0-9a-f-]{36}$/i.test(String(video.id || ''))) continue;
+          await env.VIEWS_DB.prepare('INSERT OR IGNORE INTO video_views (video_id, views) VALUES (?, ?)').bind(String(video.id), Math.max(0, Number(video.views) || 0)).run();
+          count++;
+        }
+        return reply(request, 200, { success: true, initialized: count });
+      }
       if (action === 'verify') return reply(request, 200, { success: true });
       if (action === 'syncCatalog') {
         const result = await refreshCatalog(env);
