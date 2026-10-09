@@ -1,0 +1,15 @@
+
+[build]
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"
+
+[[edge_functions]]
+  function = "social-meta"
+  path = "/watch"
+
+[[headers]]
+  for = "/ads.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
