@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /reset-password.html
+Disallow: /README.txt
+Disallow: /ADSENSE_READY_CHECKLIST.txt
+Disallow: /DELETE_FIX.txt
+Disallow: /DEPLOY_FIX_OCT_2026.txt
+Disallow: /GITHUB_NETLIFY_SETUP.md
+Disallow: /UPDATE_SHORTS_OCT_2026.txt
+Disallow: /*.sql$
+
+Sitemap: https://qisas-wa-hikayat.netlify.app/sitemap.xml

@@ -1,0 +1,10 @@
+{
+  "name": "qisas-wa-hikayat-al-layl-v16-r2",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.901.0",
+    "@aws-sdk/s3-request-presigner": "^3.901.0",
+    "@supabase/supabase-js": "^2.58.0"
+  }
+}
